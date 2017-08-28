@@ -1,0 +1,16 @@
+---
+- hosts: php
+  tasks:
+          - name: Instala php7 php-fpm a la escucha tcp
+            apt: name={{ item }} state=installed update_cache=true 
+            with_items:
+                    - php-redis
+                    - php-fpm
+
+          - name: Configura php-fpm
+            template: src=config-files/php-fpm.conf dest=/etc/php/7.0/fpm/
+            notify: restart php7.0-fpm
+
+  handlers:
+    - name: restart php7.0-fpm
+      service: name=php7.0-fpm state=restarted

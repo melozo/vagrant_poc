@@ -1,0 +1,18 @@
+---
+- hosts: redis
+  tasks:
+    - name: Instala redis
+      apt: name=redis-server state=installed
+    
+    - replace:
+        path: /etc/redis/redis.conf
+        regexp: '127.0.0.1'
+        replace: '10.127.0.30'
+
+    - name: Configuracion de redis
+      template: src=config-files/redis.conf dest=/etc/redis/
+      notify: restart redis
+
+  handlers:
+    - name: restart redis
+      service: name=redis state=restarted

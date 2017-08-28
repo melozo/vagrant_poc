@@ -1,0 +1,23 @@
+---
+- hosts: nginx
+  tasks:
+          - name: Instala nginx con una configuracion minima
+            apt: name={{ item }} state=installed update_cache=true
+            with_items:
+                    - git
+                    - nginx
+
+          - name: Configure nginx
+            template: src=config-files/nginx.conf dest=/etc/nginx/sites-available/default
+            notify: restart nginx
+        
+          - name: Git clone para la app
+            git: >
+                  dest=/var/www/html/app
+                  repo=https://github.com/Tombar/sample-app.git
+                  update=no
+            notify: restart nginx
+
+  handlers:
+    - name: restart nginx
+      service: name=nginx state=started      
